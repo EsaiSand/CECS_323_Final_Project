@@ -61,7 +61,6 @@ def get_attr_from_column(cls, column_name) -> str:
             else:
                 return attribute
 
-
 def select_general(cls):
     """Return one instance of the class that's supplied as an input, by prompting the user for
     the values of the selected uniqueness constraint for the collection corresponding to that class.
@@ -124,7 +123,6 @@ def select_general(cls):
         else:
             print('Sorry, no rows found that match those criteria.  Try again.')
 
-
 def extract_attr(instance, attribute_name):
     """
     Return the value of an attribute from an instance of a class.  If the attribute is just a scalar in the class,
@@ -153,7 +151,6 @@ def extract_attr(instance, attribute_name):
             return extract_attr(getattr(instance.document_type, first), rest)
         else:
             return extract_attr(getattr(instance, first), rest)
-
 
 def unique_general(instance):
     """
