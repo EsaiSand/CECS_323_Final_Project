@@ -6,6 +6,10 @@ VALIDS = {
   'schedules': ['MW', 'TuTh', 'MWF', 'F', 'S']
 }
 
+BUIDLINGS = 'buildings'
+SEMESTERS = 'semesters'
+SCHEDULES = 'schedules'
+
 REFERENCE_DATE = datetime.today()
 CURRENT_SEMESTER = ''
 

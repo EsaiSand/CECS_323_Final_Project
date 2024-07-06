@@ -15,16 +15,12 @@ from Section import Section
 from Student import Student
 from StudentMajor import StudentMajor
 
+from ProgramData import VALIDS, BUIDLINGS, SCHEDULES, SEMESTERS
 
 
-"""
-This protects Order from deletions in OrderItem of any of the objects reference by Order
-in its order_items list.  We could not include this in Order itself since that would 
-make a cyclic delete_rule between Order and OrderItem.  I've commented this out because
-it makes it impossible to remove OrderItem instances.  But you get the idea how it works."""
-
-
-# OrderItem.register_delete_rule(Order, 'orderItems', mongoengine.DENY)
+VALID_BUILDINGS = VALIDS[BUIDLINGS]
+VALID_SCHEDULES = VALIDS[SCHEDULES]
+VALID_SEMESTERS = VALIDS[SEMESTERS]
 
 def menu_loop(menu: Menu):
     """Little helper routine to just keep cycling in a menu until the user signals that they
@@ -75,10 +71,47 @@ def select_student() -> Student:
 
 # ---------- Add Functions ----------
 def add_course():
+
     pass
 
 def add_department():
-    pass
+    success = False
+    while not success:    
+        name = input("Department name: ")
+        abbreviation = input("Department abbreviation: ")
+        chair = input("Department chair")
+        
+        building = ''
+        while building not in VALID_BUILDINGS:
+            building = input("Department building: ")
+            if building not in VALID_BUILDINGS:
+                print(f"Invalid Input: Building must be one of the following -> {VALID_BUILDINGS}")
+        
+        office = ''
+        while True:
+            try:
+                office = int(input("Department office: "))
+                break
+            except:
+                print("Invalid Input: Office must be an integer")
+
+        description = input("Department description: ")
+
+        new_dept = Department(name, abbreviation, chair, building, office, description)
+        violated_constraints = unique_general(new_dept)
+        if len(violated_constraints) > 0:
+                for violated_constraint in violated_constraints:
+                    print('Your input values violated constraint: ', violated_constraint)
+                print('try again')
+        else:
+            try:
+                new_dept.save()
+                success = True
+            except Exception as e:
+                print('Errors storing the new order:')
+                print(Utilities.print_exception(e))
+
+
 
 def add_major():
     pass
@@ -93,26 +126,42 @@ def add_student_major():
     pass
 
 # ---------- Delete Functions ----------
-def delete_course():
+def delete_course(): ##
     course = select_course()
     try:
         course.delete()
     except Exception as e:
         print(f"Failure to delete course:\n{e}")
-
+# done
 def delete_department():
     department = select_department()
+    has_no_references = True
+
+    if len(department.majors) != 0:
+        print("ALERT: Selected department has associated majors. Delete majors first, then try again.")
+        has_no_references = False
+    
+    if len(department.courses) != 0:
+        print("ALERT: Selected department has associated courses. Delete courses first, then try again.")
+        has_no_references = False
+    
+    if not has_no_references:
+        print("OUPUT: No deletes made.")
+        return
+
     try:
         department.delete()
     except Exception as e:
         print(f"Failure to delete department:\n{e}")
 
+# done
 def delete_major():
     major = select_major()
     try:
         major.delete()
     except Exception as e:
         print(f"Failure to delete major:\n{e}")
+
 
 def delete_section():
     section = select_section()
@@ -123,32 +172,63 @@ def delete_section():
 
 def delete_student():
     student = select_student()
-
-    # Need to delete all student major items too
-
     try:
         student.delete()
     except Exception as e:
         print(f"Failure to delete student:\n{e}")
 
+# done
 def delete_student_major():
-    pass
+    student = select_student()
+    majors = student.majors
+
+    menu_items: [Option] = []
+    for major in majors:
+        menu_items.append(major.__str__(), major)
+    
+    chosen_major = Menu("Student Majors", "Choose which major to remove from this student", menu_items).menu_prompt()
+    try:    
+        student.remove_major(chosen_major)
+    except Exception as e:
+        print(f"Failure to delete student major:\n{e}")
 
 # ---------- List Functions ----------
-def list_courses():
-    pass
+def list_all_courses():
+    count = 1
+    for course in Course.__objects:
+        print(f"{count}. --------------\n{course.__str__()}")
+        count += 1
 
-def list_departments():
-    pass
+def list_dept_courses():
+    dept = select_department()
+    count = 1
+    for course in Course.__objects(deptAbbreviation=dept.abbreviation):
+        print(f"{count}. --------------\n{course.__str__()}")
+        count += 1
 
-def list_majors():
-    pass
+def list_all_departments():
+    count = 1
+    for department in Department.__objects:
+        print(f"{count}. --------------\n{department.__str__()}")
+        count += 1
 
-def list_sections():
-    pass
+def list_all_majors():
+    count = 1
+    for major in Major.__objects:
+        print(f"{count}. --------------\n{major.__str__()}")
+        count += 1
 
-def list_students():
-    pass
+def list_all_sections():
+    count = 1
+    for section in Section.__objects:
+        print(f"{count}. --------------\n{section.__str__()}")
+        count += 1
+
+def list_all_students():
+    count = 1
+    for student in Student.__objects:
+        print(f"{count}. --------------\n{student.__str__()}")
+        count += 1
 
 
 if __name__ == '__main__':

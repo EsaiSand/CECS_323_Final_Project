@@ -22,6 +22,26 @@ class Student(Document):
     self.firstName = firstName
     self.email = email
 
+    if self.majors is None:
+      self.majors = []
+
+  def remove_major(self, targetMajor):
+    """Removes target major from list of student majors if it exists
+    :param targetMajor: StudentMajor instance to delete"""
+    for studentMajor in self.majors:
+      if targetMajor == studentMajor:
+        self.majors.remove(targetMajor)
+        print("OUTPUT: Successfully removed major")
+        return
+    
+    print("OUTPUT: No deletes made, student does not have this major.")
+
   def __str__(self):
-    return f"{self.firstName} {self.lastName}, {self.email}"
+    student_info = f"{self.firstName} {self.lastName}, {self.email}, Majors: "
+    if len(self.majors) == 0:
+      student_info += "Undeclared  "
+    else:
+      for major in self.majors:
+        student_info += major.majorName + ", "
+    return student_info[:-2]
   
