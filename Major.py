@@ -1,4 +1,7 @@
 from mongoengine import *
+from Department import Department
+import mongoengine
+
 
 class Major(Document):
   # ---- Major attributes ----
@@ -7,6 +10,11 @@ class Major(Document):
   
   # ---- Embedded attributes ----
   deptAbbreviation = StringField(db_field='department_abbreviation', max_length=10, min_length=2, required=True)
+
+  # ---- Relationship References ----
+    # Major has reference to associated department. Whenever we attempt to delete a department,
+    # mongoengine will throw error if there are associated majors
+  department = ReferenceField('Department', required=True, reverse_delete_rule=mongoengine.DENY)
 
   # Enforcing uniqueness constraints
   #  - No majors with same name
@@ -17,11 +25,12 @@ class Major(Document):
   # Only know department abbreviation (retrieved from department collection on major creation)
 
 
-  def __init__(self, name: str, description: str, deptAbbreviation: str, *args, **values):
+  def __init__(self, name: str, description: str, department: Department, *args, **values):
     super().__init__(*args, **values)
     self.description = description
     self.name = name
-    self.deptAbbreviation = deptAbbreviation
+    self.department = department
+    self.deptAbbreviation = department.abbreviation
 
   def __str__(self):
     return f"{self.name} major:\n{self.description}\n"

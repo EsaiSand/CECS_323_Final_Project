@@ -17,7 +17,7 @@ class Menu:
         # The list of options for the user to choose from.
         self.options = options
 
-    def menu_prompt(self) -> str:
+    def menu_prompt(self):
         """
         Display the available options and their results and prompt the user for which
         option they will take.

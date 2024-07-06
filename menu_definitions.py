@@ -19,33 +19,41 @@ menu_main = Menu('main', 'Please select one of the following options:', [
 
 # options for adding a new instance
 add_select = Menu('add select', 'Which type of object do you want to add?:', [
-    Option("Orders", "add_order()"),
-    Option("Products", "add_product()"),
-    Option("Order Items", "add_order_item()"),
+    Option("Department", "add_department()"),
+    Option("Course", "add_course()"),
+    Option("Section", "add_section()"),
+    Option("Student", "add_student()"),
+    Option("Major", "add_major()"),
     Option("Exit", "pass")
 ])
 
 # options for deleting an existing instance
 delete_select = Menu('delete select', 'Which type of object do you want to delete?:', [
-    Option("Orders", "delete_order()"),
-    Option("Order Items", "delete_order_item()"),
-    Option("Products", "delete_product()"),
+    Option("Department", "delete_department()"),
+    Option("Course", "delete_course()"),
+    Option("Section", "delete_section()"),
+    Option("Student", "delete_student()"),
+    Option("Major", "delete_major()"),
     Option("Exit", "pass")
 ])
 
 # options for listing the existing instances
 list_select = Menu('list select', 'Which type of object do you want to list?:', [
-    Option("Orders", "list_order()"),
-    Option("Order Items", "list_order_item()"),
-    Option("Products", "list_product()"),
+    Option("All Departments", "list_all_departments()"),
+    Option("All Courses", "list_all_courses()"),
+    Option("All Sections", "list_all_sections()"),
+    Option("All Students", "list_all_students()"),
+    Option("All Majors", "list_all_majors()"),
     Option("Exit", "pass")
 ])
 
 # options for testing the select functions
 select_select = Menu('select select', 'Which type of object do you want to select:', [
-    Option("Order", "print(select_order())"),
-    Option("Order Item", "print(select_order_item())"),
-    Option("Product", "print(select_product())"),
+    Option("Department", "select_department()"),
+    Option("Course", "select_course()"),
+    Option("Section", "select_section()"),
+    Option("Student", "select_student()"),
+    Option("Major", "select_major()"),
     Option("Exit", "pass")
 ])
 
