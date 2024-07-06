@@ -19,18 +19,21 @@ class Major(Document):
   # Enforcing uniqueness constraints
   #  - No majors with same name
   meta = {'collection': 'majors',
-          'indexes': [{'unique': True, 'fields': ['majorName'], 'name': 'majors_uk_01'}]
+          'indexes': [{'unique': True, 'fields': ['name'], 'name': 'majors_uk_01'}]
           }
   # Majors do not 'know' of associated students. 
   # Only know department abbreviation (retrieved from department collection on major creation)
 
 
-  def __init__(self, name: str, description: str, department: Department, *args, **values):
+  def __init__(self, name: str, description: str, department: Department, deptAbbreviation: str,*args, **values):
     super().__init__(*args, **values)
     self.description = description
     self.name = name
     self.department = department
-    self.deptAbbreviation = department.abbreviation
+    self.deptAbbreviation = deptAbbreviation
+
+  def equals(self, other_major):
+    return self.name == other_major.name
 
   def __str__(self):
     return f"{self.name} major:\n{self.description}\n"

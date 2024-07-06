@@ -11,7 +11,7 @@ class StudentMajor(EmbeddedDocument):
   majorName = StringField(db_field='declared_major', required=True)
 
   # ---- Reference Fields ----
-  major = ReferenceField(Major, required=True, reverse_delete_rule=mongoengine.DENY)
+  major = ReferenceField(Major, required=True) # Major delete rule enforced in main
 
   def __init__(self, majorName: str, declarationDate: datetime, *args, **kwargs):
     super().__init__(*args, **kwargs)

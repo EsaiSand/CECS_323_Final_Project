@@ -71,15 +71,52 @@ def select_student() -> Student:
 
 # ---------- Add Functions ----------
 def add_course():
+    success = False
+    while not success:
+        print("Select the course's department:")
+        course_dept = select_department()
+        deptAbbreviation = course_dept.abbreviation
+        name = input("Courses name: ")
+        number = ''
+        while True:
+            try:
+                number = int(input("Course number: "))
+                break
+            except:
+                print("Invalid Input: Course number must be an integer")
+        description = input("Course description: ")
+        units = ''
+        while True:
+            try:
+                units = int(input("Course units: "))
+                break
+            except:
+                print("Invalid Input: Course units must be an integer")
 
-    pass
+        new_course = Course(name, number, description, units, course_dept, deptAbbreviation)
+        violated_constraints = unique_general(new_course)
+        if len(violated_constraints) > 0:
+                for violated_constraint in violated_constraints:
+                    print('Your input values violated constraint: ', violated_constraint)
+                print('try again')
+        else:
+            try:
+                # Adding course to db, then to corresponding department
+                new_course.save()
+                course_dept.add_dept_course(new_course)
+                course_dept.save()
+                success = True
+            except Exception as e:
+                print('Errors storing the new course:')
+                print(Utilities.print_exception(e))
+                print(e)
 
 def add_department():
     success = False
     while not success:    
         name = input("Department name: ")
         abbreviation = input("Department abbreviation: ")
-        chair = input("Department chair")
+        chair = input("Department chair: ")
         
         building = ''
         while building not in VALID_BUILDINGS:
@@ -106,15 +143,40 @@ def add_department():
         else:
             try:
                 new_dept.save()
+
                 success = True
             except Exception as e:
-                print('Errors storing the new order:')
+                print('Errors storing the new department:')
                 print(Utilities.print_exception(e))
 
 
 
 def add_major():
-    pass
+    success = False
+    while not success:
+        print("Select the major's department:")
+        major_dept = select_department()
+        deptAbbreviation = major_dept.abbreviation
+        name = input("Major name: ")
+        description = input("Major description: ")
+
+        new_major = Major(name, description, major_dept, deptAbbreviation)
+        violated_constraints = unique_general(new_major)
+        if len(violated_constraints) > 0:
+                for violated_constraint in violated_constraints:
+                    print('Your input values violated constraint: ', violated_constraint)
+                print('try again')
+        else:
+            try:
+                # Saving new major to db, then appending it to dept list
+                new_major.save()
+                major_dept.add_major(new_major)
+                major_dept.save()
+                success = True
+            except Exception as e:
+                print('Errors storing the new major:')
+                print(Utilities.print_exception(e))
+
 
 def add_section():
     pass
@@ -195,38 +257,38 @@ def delete_student_major():
 # ---------- List Functions ----------
 def list_all_courses():
     count = 1
-    for course in Course.__objects:
+    for course in Course.objects:
         print(f"{count}. --------------\n{course.__str__()}")
         count += 1
 
 def list_dept_courses():
     dept = select_department()
     count = 1
-    for course in Course.__objects(deptAbbreviation=dept.abbreviation):
+    for course in Course.objects(deptAbbreviation=dept.abbreviation):
         print(f"{count}. --------------\n{course.__str__()}")
         count += 1
 
 def list_all_departments():
     count = 1
-    for department in Department.__objects:
+    for department in Department.objects:
         print(f"{count}. --------------\n{department.__str__()}")
         count += 1
 
 def list_all_majors():
     count = 1
-    for major in Major.__objects:
+    for major in Major.objects:
         print(f"{count}. --------------\n{major.__str__()}")
         count += 1
 
 def list_all_sections():
     count = 1
-    for section in Section.__objects:
+    for section in Section.objects:
         print(f"{count}. --------------\n{section.__str__()}")
         count += 1
 
 def list_all_students():
     count = 1
-    for student in Student.__objects:
+    for student in Student.objects:
         print(f"{count}. --------------\n{student.__str__()}")
         count += 1
 

@@ -1,5 +1,7 @@
 from mongoengine import *
+import mongoengine
 from Section import Section
+from Department import Department
 
 class Course(Document):
   # ---- Course Attributes ----
@@ -10,15 +12,32 @@ class Course(Document):
 
   # ---- Embeddeed Attributes ----
   deptAbbreviation = StringField(db_field='course_department', required=True)
-  currentSections = EmbeddedDocumentListField(Section, db_field='current_sections')
 
-  def __init__(self, name: str, number: int, description: str, units: int, deptAbbreviation: str,*args, **values):
+  # --- Relationship Attributes
+  department = ReferenceField(Department, required=True, reverse_delete_rule=mongoengine.DENY)
+
+  # Enforcing Uniqueness Constraints
+  # - No two courses with same name
+  # - No two courses within same department with same number
+  # - No two courses with same description
+  meta = {'collection': 'courses',
+          'indexes': [{'unique': True, 'fields': ['name'], 'name': 'courses_uk_01'},
+                      {'unique': True, 'fields': ['deptAbbreviation', 'number'], 'name': 'courses_uk_02'},
+                      {'unique': True, 'fields': ['description'], 'name': 'courses_uk_03'},]
+          }
+
+  def __init__(self, name: str, number: int, description: str, units: int, department: Department, deptAbbreviation: str,*args, **values):
     super().__init__(*args, **values)
     self.name = name
     self.number = number
     self.description = description
     self.units = units
+    self.department = department
     self.deptAbbreviation = deptAbbreviation
+  
+  def equals(self, other_course):
+    return self.name == other_course.name
 
   def __str__(self):
-    return 
+    return
+  

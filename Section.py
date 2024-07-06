@@ -1,25 +1,25 @@
 from mongoengine import *
 import mongoengine
 from datetime import datetime
-from Course import Course
+# from Course import Course
 
 class Section(Document):
-  # ---- Section Attributes
+  # ---- Section Attributes ----
   sectionNumber = IntField(db_field='section_number', min_value=1, required=True)
   semester = StringField(db_field='semester', required = True)
-  year = IntField(db_field='section_number', min_value=1984, required=True)
-  building = StringField(db_field='semester', required = True)
-  room = IntField(db_field='section_number', min_value=1, required=True)
-  schedule = StringField(db_field='semester', required = True)
+  year = IntField(db_field='year', min_value=1984, required=True)
+  building = StringField(db_field='building', required = True)
+  room = IntField(db_field='room', min_value=1, required=True)
+  schedule = StringField(db_field='schedule', required = True)
   startTime = DateTimeField(db_field='start_time', required=True)
-  instructor = StringField(db_field='semester', min_length=1, max_length=30, required = True)
+  instructor = StringField(db_field='instructor', min_length=1, max_length=30, required = True)
 
   # ---- Embedded Attributes ----
   deptAbbreviation = StringField(db_field='department_abbreviation', required=True)
   courseNumber = StringField(db_field='course_number', required=True)
 
   # ---- Relationship References ----
-  course = ReferenceField(Course, required=True, reverse_delete_rule=mongoengine.DENY)
+  course = ReferenceField('Course', required=True) # Enforcing course delete rule in main to avoid circular rules
 
   # Enforcing Uniqueness Constraints
   #  - No two sections of a particular course with same section number within same semester 
@@ -31,7 +31,7 @@ class Section(Document):
                       {'unique': True, 'fields': ['semester', 'year', 'startTime', 'instructor', 'schedule'], 'name': 'sections_uk_03'}]}
 
 
-  def __init__(self, sectionNumber: int, semester: str, year: int, building: str, room: int, schedule: str, startTime: datetime, instructor: str, course: Course, *args, **values):
+  def __init__(self, sectionNumber: int, semester: str, year: int, building: str, room: int, schedule: str, startTime: datetime, instructor: str, course, *args, **values):
     super().__init__(*args, **values)
     self.sectionNumber = sectionNumber
     self.semester = semester

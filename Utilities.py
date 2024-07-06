@@ -22,8 +22,10 @@ class Utilities:
             # cluster = f"mongodb+srv://CECS-323-Spring-2024-User:{password}@cluster0.uhlmij5.mongodb.net/?retryWrites=true&w=majority"
             cluster = "mongodb+srv://username:pass_word@cecs-323-summer-2024.lagrqld.mongodb.net/?retryWrites=true&w=majority"
             
-            database_name = input('Database name to use --> ')
-            client = connect(db=database_name, host=cluster)
+            # database_name = input('Database name to use --> ')
+            # client = connect(db=database_name, host=cluster)
+
+            client = connect(db='Demonstration', host=cluster)
             try:
                 junk = client.server_info()  # Test the connection
                 return client

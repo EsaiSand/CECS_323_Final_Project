@@ -6,15 +6,15 @@ class Department(Document):
   name = StringField(db_field='name', max_length=50, min_length=10, required=True)
   abbreviation = StringField(db_field='abbreviation', max_length=10, min_length=2, required=True)
   chair = StringField(db_field='chair', max_length=50, min_length=5, required=True)
-  building = StringField(db_field='building', max_length=50, min_length=10, required=True)
-  office = IntField(db_field='office', min_value=0, required=True)
+  building = StringField(db_field='building', required=True)
+  office = IntField(db_field='office', min_value=1, required=True)
   description = StringField(db_field='description', max_length=80, min_length=10, required=True)
 
   # ---- Relationship References ----
   # Reference to department majors, no embedding. When associated major deleted, remove from this list.
   majors = ListField(ReferenceField('Major'), reverse_delete_rule=mongoengine.PULL)
   # Reference to department courses, no embedding. When associated course deleted, remove from this list.
-  courses = ListField(ReferenceField('Course'), reverse_delete_rule=mongoengine.PULL)
+  courses = ListField(ReferenceField('Course'), reverse_delete_rule=mongoengine.CASCADE)
 
   # Enforcing uniqueness constraints
   #  - No depts with same name
@@ -42,23 +42,20 @@ class Department(Document):
     if self.majors is None:
       self.majors = []
 
-  def add_major(self, major):
+  def add_dept_major(self, major):
     for department_major in self.majors:
       if major.equals(department_major):
         return # Department already has this major. Don't add
 
     self.majors.append(major)
 
-  def add_course(self, course):
+  def add_dept_course(self, course):
     for department_course in self.courses:
-      if course.equals(department_course):
-        return # Department alread has this course. Don't add
-
-  # Remove methods handled by reverse_delete_rule in reference attributes
-
+      if department_course.equals(course):
+        return # Department already has this course. Don't add
+    # Remove methods handled by reverse_delete_rule in reference attributes
     self.courses.append(course)  
-    
-
+  
   def __str__(self):
     return f"{self.name} department({self.abbreviation}):\n\tChair: {self.chair}\n\tOffice: {self.building} {self.office}\n\tDescription: {self.description}" 
 
